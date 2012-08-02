@@ -1,0 +1,7 @@
+name: SimpelBan
+version: 1.0
+authors: [markusvat]
+main: com.markusvat.SimpelBan.Main
+commands:
+  kick:
+  ban:
