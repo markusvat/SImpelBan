@@ -4,6 +4,9 @@ authors: [markusvat]
 main: com.markusvat.SimpelBan.Main
 commands:
   kick:
+    aliases:
+      k: [kick]
   ban:
   unban:
   getbanned:
+  c:

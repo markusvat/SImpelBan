@@ -29,7 +29,14 @@ public class Main extends JavaPlugin{
 					sender.sendMessage("Bitte Spieler namen zum kicken eingeben");
 				  return true;	
 				}
-				return new CommandKICK((Player) sender, s).run();
+				Player kick;
+				try{kick=Bukkit.getPlayer(arg[0]);}catch(Exception e){sender.sendMessage("Spieler ist nciht online");return true;}
+				if (kick!=null){
+				return new CommandKICK(kick, s).run();
+				}else{
+					sender.sendMessage("Spieler nicht gefunden");
+					return true;
+				}
 			}
 		});
 		getCommand("ban").setExecutor(new CommandExecutor() {
@@ -40,23 +47,43 @@ public class Main extends JavaPlugin{
 					return true;
 				}else if(arg.length==1){
 					List<String> a = getConfig().getStringList("Player");
-					a.add(arg[0]+"%20"+"standart");
-					getConfig().set("Player", a);
-					getConfig().options().copyDefaults(true);
-					saveConfig();
-					Player ban;
-					try {ban=Bukkit.getPlayer(arg[0]);} catch (Exception e) {return true;}
-					if (ban != null&&ban.getName().equalsIgnoreCase(arg[0])){
-					return new CommandKICK(ban.getPlayer(), "[SERVER]: Du wurdest gebannt").run();
-					}else{
-						sender.sendMessage("Spieler ist nicht online wurde aber gebannt");
+					boolean banned = false;
+					for(String s : a){
+						if (s.split("%20")[0].equalsIgnoreCase(arg[0])){
+							banned=true;
+						}
 					}
-				}else if(arg.length>=2){					
+					
+					if(banned==false){
+						a.add(arg[0]+"%20"+"standart");
+						getConfig().set("Player", a);
+						getConfig().options().copyDefaults(true);
+						saveConfig();
+						Bukkit.broadcastMessage(arg[0]+" wurde gebannt");
+						Player ban;
+						try {ban=Bukkit.getPlayer(arg[0]);} catch (Exception e) {return true;}
+						if (ban != null&&ban.getName().equalsIgnoreCase(arg[0])){
+						return new CommandKICK(ban.getPlayer(), "[SERVER]: Du wurdest gebannt").run();
+						}else{
+							sender.sendMessage("Spieler ist nicht online wurde aber gebannt");
+						}
+					}else{
+						sender.sendMessage(arg[0]+" wurde schon gebannt");
+					}
+				}else if(arg.length>=2){
+					
 					String s="";
 					for (int i=1;i!=arg.length;i++){
 						s=s+arg[i];
 					}
 					List<String> a = getConfig().getStringList("Player");
+					boolean banned = false;
+					for(String s3 : a){
+						if (s3.split("%20")[0].equalsIgnoreCase(arg[0])){
+							banned=true;
+						}
+					}
+					if (banned==false){
 					a.add(arg[0]+"%20"+s);
 					getConfig().set("Player", a);
 					getConfig().options().copyDefaults(true);
@@ -72,6 +99,9 @@ public class Main extends JavaPlugin{
 						}
 						sender.sendMessage("Spieler "+arg[0]+" ist nicht online wurde aber gebannt Grund: "+s1);
 					}
+				}else{
+					sender.sendMessage(arg[0]+" wurde schon gebannt");
+				}
 				}
 				return true;
 			}		
@@ -88,8 +118,6 @@ public class Main extends JavaPlugin{
 					try{
 					for (int i = 0; i!=a.size();i++){			
 						String s = a.get(i).split("%20")[0];
-						System.out.println(s);
-						System.out.print(arg[0]);
 						if (s.equalsIgnoreCase(arg[0])){
 							a.remove(i);
 							Bukkit.broadcastMessage(s+" wurde entbannt");
@@ -110,6 +138,15 @@ public class Main extends JavaPlugin{
 				return true;
 			}
 		});
+		getCommand("c").setExecutor(new CommandExecutor() {
+			@Override
+			public boolean onCommand(CommandSender sender, Command cmd,	String cmdlabel, String[] arg) {
+			for (int i=0;i<30;i++){
+				sender.sendMessage("");
+			}
+			return true;
+			}
+		});
 		getCommand("getbanned").setExecutor(new CommandExecutor() {
 			@Override
 			public boolean onCommand(CommandSender sender, Command cmd,	String cmdlabel, String[] arg) {
@@ -120,7 +157,7 @@ public class Main extends JavaPlugin{
 					}else {
 						sender.sendMessage("Von diesem Server gebannte Spieler");
 						for (String s : a){
-							if (s.split("%20")[1].equalsIgnoreCase("standart")){
+							if (s.split("%20")[1].toString().equalsIgnoreCase("standart")){
 								sender.sendMessage(s.split("%20")[0]);
 							}else{
 								sender.sendMessage(s.split("%20")[0]+" Grund: "+s.split("%20")[1]);
@@ -142,7 +179,6 @@ public class Main extends JavaPlugin{
 			if (banned.equalsIgnoreCase(name)){
 				//a.remove(i);
 				if (a.get(i).split("%20")[1].equalsIgnoreCase("standart")){
-					System.out.println("test");
 					p.setKickMessage("[Server]: du bist gebannt checks endlich");
 					p.getPlayer().kickPlayer("[Server]: du bist gebannt checks endlich");
 					p.setResult(Result.KICK_BANNED);
