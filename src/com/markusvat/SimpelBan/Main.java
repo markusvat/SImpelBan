@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -52,8 +51,7 @@ public class Main extends JavaPlugin{
 					sender.sendMessage("Spieler namen eingeben");
 					return true;
 				}else if(arg.length==1){
-					
-					ArrayList<String> a = new ArrayList<String>();
+					List<String> a = getConfig().getStringList("Player");
 					a.add(arg[0]+"%20"+"standart");
 					
 					
@@ -71,7 +69,7 @@ public class Main extends JavaPlugin{
 				}else if(arg.length>=2){
 					
 					String s="Du wurdest gebannt [Grund]:";
-					ArrayList<String> a = new ArrayList<String>();
+					List<String> a = getConfig().getStringList("Player");
 					a.add(arg[0]+"%20"+s);
 					
 					getConfig().set("Player", a);
@@ -87,6 +85,74 @@ public class Main extends JavaPlugin{
 				}
 				return true;
 			}
+			
+			
+			
+		});
+		
+		
+		getCommand("unban").setExecutor(new CommandExecutor() {
+			@Override
+			public boolean onCommand(CommandSender sender, Command cmd,	String cmdlabel, String[] arg) {
+				if (arg.length==0){
+					sender.sendMessage("Spieler namen eingeben");
+					return true;
+				}else if(arg.length==1){
+					boolean unban=false;
+					List<String> a = getConfig().getStringList("Player");
+					for (int i = 0; i!=a.size();i++){
+						if (a.get(i).split("%20").length>=1){ //hier soll der fehler sein
+						String s = a.get(i).split("%20")[0];
+						System.out.println(s);
+						System.out.print(arg[0]);
+						if (s.equalsIgnoreCase(arg[0])){
+							a.remove(i);
+							Bukkit.broadcastMessage(s+"wurde entbannt");
+							unban=true;
+						}
+						}else{
+							
+						}
+					}
+					if (unban==false){
+						sender.sendMessage("Speiler war nicht gebannt");
+					}
+					getConfig().set("Player", a);
+					getConfig().options().copyDefaults(true);
+					saveConfig();
+				}else if(arg.length>=2){
+				sender.sendMessage("Spieler nicht gefunden");
+				}
+				return true;
+			}
+			
+			
+			
+		});
+		
+		getCommand("getbanned").setExecutor(new CommandExecutor() {
+			@Override
+			public boolean onCommand(CommandSender sender, Command cmd,	String cmdlabel, String[] arg) {
+				if (arg.length==0){
+					List<String> a = getConfig().getStringList("Player");
+					if (a.size()==0){
+						
+						
+						sender.sendMessage("keine Spieler wurden gebannt");
+					
+					}else {
+						sender.sendMessage("Von diesem Server gebannte Spieler");
+						for (String s : a){
+							sender.sendMessage(s.split("%20")[0]);
+						}
+					}
+				}else{
+					sender.sendMessage("zu viele argumente");
+				}
+				return true;
+			}
+			
+			
 			
 		});
 		

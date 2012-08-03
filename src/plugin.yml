@@ -5,3 +5,5 @@ main: com.markusvat.SimpelBan.Main
 commands:
   kick:
   ban:
+  unban:
+  getbanned:
