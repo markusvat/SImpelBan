@@ -1,6 +1,5 @@
 package com.markusvat.SimpelBan;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -100,7 +99,9 @@ public class Main extends JavaPlugin{
 				}else if(arg.length==1){
 					boolean unban=false;
 					List<String> a = getConfig().getStringList("Player");
+					try{
 					for (int i = 0; i!=a.size();i++){
+						
 						if (a.get(i).split("%20").length>=1){ //hier soll der fehler sein
 						String s = a.get(i).split("%20")[0];
 						System.out.println(s);
@@ -110,10 +111,9 @@ public class Main extends JavaPlugin{
 							Bukkit.broadcastMessage(s+"wurde entbannt");
 							unban=true;
 						}
-						}else{
-							
 						}
-					}
+						}
+					}catch(ArrayIndexOutOfBoundsException e){}
 					if (unban==false){
 						sender.sendMessage("Speiler war nicht gebannt");
 					}
